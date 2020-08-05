@@ -17,7 +17,7 @@
 
 from __future__ import absolute_import, division, print_function
 from transformers.data.processors.squad import SquadV1Processor, SquadV2Processor, SquadResult
-from transformers.data.metrics.squad_metrics import compute_predictions_logits, compute_predictions_log_probs, squad_evaluate
+from transformers.data.metrics.squad_metrics import compute_predictions_logits_choice as compute_predictions_logits, compute_predictions_log_probs, squad_evaluate
 from evaluate_official2 import eval_squad
 import argparse
 import logging
