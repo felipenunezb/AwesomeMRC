@@ -17,7 +17,7 @@
 
 from __future__ import absolute_import, division, print_function
 from transformers.data.processors.squad import SquadV1Processor, SquadV2Processor, SquadResult
-from transformers.data.metrics.squad_metrics import compute_predictions_logits_choice as compute_predictions_logits, compute_predictions_log_probs, squad_evaluate
+from transformers.data.metrics.squad_metrics import compute_predictions_logits_av as compute_predictions_logits, compute_predictions_log_probs, squad_evaluate
 from evaluate_official2 import eval_squad
 import argparse
 import logging
@@ -217,7 +217,7 @@ def evaluate(args, model, tokenizer, prefix=""):
         os.makedirs(args.output_dir)
 
     args.eval_batch_size = args.per_gpu_eval_batch_size * max(1, args.n_gpu)
-
+    
     # Note that DistributedSampler samples randomly
     eval_sampler = SequentialSampler(dataset)
     eval_dataloader = DataLoader(dataset, sampler=eval_sampler, batch_size=args.eval_batch_size)
@@ -311,7 +311,7 @@ def evaluate(args, model, tokenizer, prefix=""):
         predictions = compute_predictions_logits(examples, features, all_results, args.n_best_size,
                         args.max_answer_length, args.do_lower_case, output_prediction_file,
                         output_nbest_file, output_null_log_odds_file, args.verbose_logging,
-                        args.version_2_with_negative, args.null_score_diff_threshold)
+                        args.version_2_with_negative, args.null_score_diff_threshold, args.choice_weight, (1-args.choice_weight))
 
     with open(os.path.join(args.output_dir, str(prefix) + "_eval_examples.pkl"), 'wb') as f:
         pickle.dump(examples, f)
@@ -441,6 +441,8 @@ def main():
                         help="Rul evaluation during training at each logging step.")
     parser.add_argument("--do_lower_case", action='store_true',
                         help="Set this flag if you are using an uncased model.")
+    parser.add_argument("--choice_weight", default=0.5, type=float,
+                        help="Weight for Internal Front Verification.")
 
     parser.add_argument("--per_gpu_train_batch_size", default=8, type=int,
                         help="Batch size per GPU/CPU for training.")
