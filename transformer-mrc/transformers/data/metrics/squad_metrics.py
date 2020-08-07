@@ -1182,6 +1182,7 @@ def compute_predictions_logits_fn(
                 all_predictions[example.qas_id] = best_non_null_entry.text
         all_nbest_json[example.qas_id] = nbest_json
 
+    final_map = {}
     for idx, key in enumerate(key_map):
             key_list = key_map[key]
             key_list[0] = key_list[0] / cnt_map[key]
