@@ -990,7 +990,8 @@ def compute_predictions_logits_fn(
     output_null_log_odds_file,
     verbose_logging,
     version_2_with_negative,
-    null_score_diff_threshold
+    null_score_diff_threshold,
+    output_null_cls_log_odds_file
 ):
     """Write final predictions to the json file and log-odds of null if needed."""
     logger.info("Writing predictions to: %s" % (output_prediction_file))
@@ -1202,7 +1203,7 @@ def compute_predictions_logits_fn(
         with open(output_null_log_odds_file, "w") as writer:
             writer.write(json.dumps(null_scores_json, indent=4) + "\n")
             
-        with open(os.path.join(args.output_dir, "cls_av_score.json"), "w") as writer:
+        with open(output_null_cls_log_odds_file, "w") as writer:
             writer.write(json.dumps(final_map, indent=4) + "\n")
 
     return all_predictions
