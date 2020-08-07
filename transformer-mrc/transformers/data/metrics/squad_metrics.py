@@ -16,6 +16,7 @@ from io import open
 from tqdm import tqdm
 import string
 import re
+import os
 
 from transformers.tokenization_bert import BasicTokenizer, whitespace_tokenize
 
