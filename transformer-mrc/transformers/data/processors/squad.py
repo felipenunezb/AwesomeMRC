@@ -81,7 +81,7 @@ def _is_whitespace(c):
 
 
 def squad_convert_examples_to_features(
-    examples, tokenizer, max_seq_length, doc_stride, max_query_length, is_training, return_dataset=False, regression=False, pq_end=False,
+    examples, tokenizer, max_seq_length, doc_stride, max_query_length, is_training, return_dataset=False, regression=False, pq_end=False, output_feature=False
 ):
     """
     Converts a list of examples into a list of features that can be directly given as input to a model.
@@ -119,7 +119,9 @@ def squad_convert_examples_to_features(
     unique_id = 1000000000
 
     features = []
+    id_map = {}
     for (example_index, example) in enumerate(tqdm(examples, desc="Converting examples to features")):
+        id_map[example_index] = example.qas_id
         if is_training and not example.is_impossible:
             # Get start and end position
             start_position = example.start_position
@@ -370,8 +372,10 @@ def squad_convert_examples_to_features(
                     all_cls_index,
                     all_p_mask,
                 )
-
-        return features, dataset
+        if output_feature:
+            return features, dataset, id_map
+        else:
+            return features, dataset
     elif return_dataset == "tf":
         if not is_tf_available():
             raise ImportError("TensorFlow must be installed to return a TensorFlow dataset.")
@@ -412,7 +416,10 @@ def squad_convert_examples_to_features(
             ),
         )
 
-    return features
+    if output_feature:
+            return features, id_map
+        else:
+            return features
 
 
 class SquadProcessor(DataProcessor):
