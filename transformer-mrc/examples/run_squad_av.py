@@ -294,6 +294,7 @@ def evaluate(args, model, tokenizer, prefix=""):
 
     if args.version_2_with_negative:
         output_null_log_odds_file = os.path.join(args.output_dir, "null_odds_{}.json".format(prefix))
+        output_null_cls_log_odds_file = os.path.join(args.output_dir, "cls_av_score.json")
     else:
         output_null_log_odds_file = None
 
@@ -311,7 +312,7 @@ def evaluate(args, model, tokenizer, prefix=""):
         predictions = compute_predictions_logits(examples, features, all_results, args.n_best_size,
                         args.max_answer_length, args.do_lower_case, output_prediction_file,
                         output_nbest_file, output_null_log_odds_file, args.verbose_logging,
-                        args.version_2_with_negative, args.null_score_diff_threshold)
+                        args.version_2_with_negative, args.null_score_diff_threshold, output_null_cls_log_odds_file)
 
     with open(os.path.join(args.output_dir, str(prefix) + "_eval_examples.pkl"), 'wb') as f:
         pickle.dump(examples, f)
