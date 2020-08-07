@@ -1011,10 +1011,13 @@ def compute_predictions_logits_fn(
     all_nbest_json = collections.OrderedDict()
     scores_diff_json = collections.OrderedDict()
     null_scores_json = collections.OrderedDict()
+    
+    key_map = {}
+    cnt_map = {}
 
     for (example_index, example) in enumerate(all_examples):
         features = example_index_to_features[example_index]
-
+        
         prelim_predictions = []
         # keep track of the minimum score of null start+end of position 0
         score_null = 1000000  # large and positive
@@ -1025,6 +1028,15 @@ def compute_predictions_logits_fn(
             result = unique_id_to_result[feature.unique_id]
             start_indexes = _get_best_indexes(result.start_logits, n_best_size)
             end_indexes = _get_best_indexes(result.end_logits, n_best_size)
+            #store choice logits
+            if feature.unique_id in key_map:
+                logit_list = key_map[feature.unique_id]
+                logit_list[0] += result.choice_logits[0]
+                logit_list[1] += result.choice_logits[1]
+                cnt_map[feature.unique_id] += 1
+            else:
+                cnt_map[feature.unique_id] = 1
+                key_map[feature.unique_id] = [result.choice_logits[0], result.choice_logits[1]]
             # if we could have irrelevant answers, get the min score of irrelevant
             if version_2_with_negative:
                 feature_null_score = result.start_logits[0] + result.end_logits[0]
@@ -1170,6 +1182,14 @@ def compute_predictions_logits_fn(
                 all_predictions[example.qas_id] = best_non_null_entry.text
         all_nbest_json[example.qas_id] = nbest_json
 
+    for idx, key in enumerate(key_map):
+            key_list = key_map[key]
+            key_list[0] = key_list[0] / cnt_map[key]
+            key_list[1] = key_list[1] / cnt_map[key]
+            # final_map[key] = key_list[1]
+            # final_map[key] = key_list[1]*2
+            final_map[key] = key_list[1] - key_list[0]    
+    
     with open(output_prediction_file, "w") as writer:
         writer.write(json.dumps(all_predictions, indent=4) + "\n")
 
@@ -1179,6 +1199,9 @@ def compute_predictions_logits_fn(
     if version_2_with_negative:
         with open(output_null_log_odds_file, "w") as writer:
             writer.write(json.dumps(null_scores_json, indent=4) + "\n")
+            
+        with open(os.path.join(args.output_dir, "cls_av_score.json"), "w") as writer:
+            writer.write(json.dumps(final_map, indent=4) + "\n")
 
     return all_predictions
 
