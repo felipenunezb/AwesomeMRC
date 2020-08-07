@@ -417,9 +417,9 @@ def squad_convert_examples_to_features(
         )
 
     if output_feature:
-            return features, id_map
-        else:
-            return features
+        return features, id_map
+    else:
+        return features
 
 
 class SquadProcessor(DataProcessor):
