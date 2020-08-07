@@ -1031,14 +1031,14 @@ def compute_predictions_logits_fn(
             start_indexes = _get_best_indexes(result.start_logits, n_best_size)
             end_indexes = _get_best_indexes(result.end_logits, n_best_size)
             #store choice logits
-            if example_index in key_map:
-                logit_list = key_map[example_index]
+            if example.qas_id in key_map:
+                logit_list = key_map[example.qas_id]
                 logit_list[0] += result.choice_logits[0]
                 logit_list[1] += result.choice_logits[1]
-                cnt_map[example_index] += 1
+                cnt_map[example.qas_id] += 1
             else:
-                cnt_map[example_index] = 1
-                key_map[example_index] = [result.choice_logits[0], result.choice_logits[1]]
+                cnt_map[example.qas_id] = 1
+                key_map[example.qas_id] = [result.choice_logits[0], result.choice_logits[1]]
             # if we could have irrelevant answers, get the min score of irrelevant
             if version_2_with_negative:
                 feature_null_score = result.start_logits[0] + result.end_logits[0]
