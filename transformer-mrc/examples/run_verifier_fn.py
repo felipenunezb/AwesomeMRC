@@ -28,9 +28,8 @@ logger = logging.getLogger(__name__)
 def get_score1(args):
     cof = [args.cls_beta, 1-args.cls_beta]
     best_cof = [1]
-    lambda = 0.5
     
-    assert lambda < 1
+    assert args.na_lambda < 1
     
     if not os.path.exists(args.output_dir):
             os.makedirs(args.output_dir)
@@ -88,7 +87,7 @@ def get_score1(args):
     #Score NA > l1 * null_odds + l2 * cls_score
     output_scores = collections.OrderedDict()
     for (key, score) in max_logits.items():
-        output_scores[key] = (lambda * null_odds[key] + (1-lambda) * cls_score[key]) - max_logits[key]
+        output_scores[key] = (args.na_lambda * null_odds[key] + (1-args.na_lambda) * cls_score[key]) - max_logits[key]
                 
     best_th = args.thresh
 
@@ -131,8 +130,6 @@ def main():
     parser.add_argument('--output_dir', type=str, default="")
     parser.add_argument('--thresh', default=0, type=float)
     parser.add_argument("--predict_file", default="data/dev-v2.0.json")
-    parser.add_argument('--null_score_diff_threshold', type=float, default=0.0,
-                        help="If null_score - best_non_null is greater than the threshold predict null.")
     parser.add_argument('--na_lambda', type=float, default=0.5,
                         help="Lambda 1 for score_na. This is the weight of Null Odds (s1 + e1). CLS lambda will be 1 minus this value")
     parser.add_argument('--cls_beta', type=float, default=0.5,
