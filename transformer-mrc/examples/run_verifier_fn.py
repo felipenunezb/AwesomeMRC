@@ -81,7 +81,7 @@ def get_score1(args):
         with open(input_file, "r") as reader:
             input_data = json.load(reader, strict=False)
             for (key, score) in input_data.items():
-                null_odds[key] = cof[idx] * score
+                null_odds[key] = best_cof[idx] * score
 
     #Out Score > Score NA - Score HAS
     #Score NA > l1 * null_odds + l2 * cls_score
