@@ -135,7 +135,8 @@ def main():
     parser.add_argument('--cls_beta', type=float, default=0.5,
                         help="Beta 1 for cls_scores (v). This is the weight of EFV (cls_score file). IFV weight will be 1 minus this value")
     args = parser.parse_args()
-    get_score1(args)
+    results = get_score1(args)
+    print(results)
 
 if __name__ == "__main__":
     main()
