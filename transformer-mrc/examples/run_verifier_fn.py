@@ -29,7 +29,7 @@ def get_score1(args):
     cof = [args.cls_beta, 1-args.cls_beta]
     best_cof = [1]
     
-    assert args.na_lambda < 1
+    assert args.na_lambda <= 1
     
     if not os.path.exists(args.output_dir):
             os.makedirs(args.output_dir)
@@ -98,10 +98,13 @@ def get_score1(args):
     #Save files
     output_prediction_file = os.path.join(args.output_dir, "predictions.json")
     output_null_log_odds_file = os.path.join(args.output_dir, "combined_null_log_odds.json")
+    max_logits_file = os.path.join(args.output_dir, "max_logits.json")
     with open(output_prediction_file, "w") as writer:
         writer.write(json.dumps(output_predictions, indent=4) + "\n")
     with open(output_null_log_odds_file, "w") as writer:
         writer.write(json.dumps(output_scores, indent=4) + "\n")
+    with open(max_logits_file, "w") as writer:
+        writer.write(json.dumps(max_logits, indent=4) + "\n")
         
         
     result = eval_squad(args.predict_file, output_prediction_file, output_null_log_odds_file,
