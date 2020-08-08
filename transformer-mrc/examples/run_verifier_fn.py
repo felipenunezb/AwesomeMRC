@@ -105,7 +105,7 @@ def get_score1(args):
         
         
     result = eval_squad(args.predict_file, output_prediction_file, output_null_log_odds_file,
-                            args.null_score_diff_threshold)
+                            args.thresh)
 
     results = {}
     result = dict((k + ('_{}'.format(global_step) if global_step else ''), v) for k, v in result.items())
