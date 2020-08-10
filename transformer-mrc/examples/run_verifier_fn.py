@@ -87,7 +87,10 @@ def get_score1(args):
     #Score NA > l1 * null_odds + l2 * cls_score
     output_scores = collections.OrderedDict()
     for (key, score) in max_logits.items():
-        output_scores[key] = (args.na_lambda * null_odds[key] + (1-args.na_lambda) * cls_score[key]) - max_logits[key]
+        if args.original_way:
+            output_scores[key] = (args.na_lambda * (null_odds[key] - max_logits[key]) + (1-args.na_lambda) * cls_score[key])
+        else:
+            output_scores[key] = (args.na_lambda * null_odds[key] + (1-args.na_lambda) * cls_score[key]) - max_logits[key]
                 
     best_th = args.thresh
 
@@ -137,6 +140,8 @@ def main():
                         help="Lambda 1 for score_na. This is the weight of Null Odds (s1 + e1). CLS lambda will be 1 minus this value")
     parser.add_argument('--cls_beta', type=float, default=0.5,
                         help="Beta 1 for cls_scores (v). This is the weight of EFV (cls_score file). IFV weight will be 1 minus this value")
+    parser.add_argument('--original_way', action='store_true',
+                        help='If True, use same logic as in run_verifier. Otherwise, use something more similar to what is specified in the paper')
     args = parser.parse_args()
     results = get_score1(args)
     print(results)
