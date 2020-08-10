@@ -50,7 +50,7 @@ def get_score1(args):
         mean_score = 0.0
         for score in scores:
             mean_score += score
-        mean_score /= float(len(scores))
+        #mean_score /= float(len(scores))
         cls_score[key] = mean_score
 
     #Max Logit Scores
