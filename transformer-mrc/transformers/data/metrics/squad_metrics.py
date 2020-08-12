@@ -1205,7 +1205,7 @@ def compute_predictions_logits_fn(
             writer.write(json.dumps(null_scores_json, indent=4) + "\n")
          
         with open(output_null_log_odds_diff_file, "w") as writer:
-            writer.write(json.dumps(score_diff, indent=4) + "\n")
+            writer.write(json.dumps(scores_diff_json, indent=4) + "\n")
             
         with open(output_null_cls_log_odds_file, "w") as writer:
             writer.write(json.dumps(final_map, indent=4) + "\n")
